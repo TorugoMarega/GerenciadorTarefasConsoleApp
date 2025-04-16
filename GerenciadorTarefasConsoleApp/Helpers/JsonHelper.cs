@@ -8,5 +8,6 @@ namespace GerenciadorTarefasConsoleApp.Helpers
 {
     class JsonHelper
     {
+        string CaminhoArquivo = "minhaListaTarefas.json";
     }
 }
