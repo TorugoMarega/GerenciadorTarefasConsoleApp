@@ -9,7 +9,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        InterfaceHelper.start();
-        InterfaceHelper.showMenu();
+        InterfaceHelper.Start();
+        InterfaceHelper.ShowMenu();
     }
 }
