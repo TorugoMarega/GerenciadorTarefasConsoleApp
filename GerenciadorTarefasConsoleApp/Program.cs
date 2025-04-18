@@ -11,6 +11,5 @@ class Program
     static void Main(string[] args)
     {
         InterfaceHelper.Start();
-        InterfaceHelper.ShowMenu();
     }
 }
