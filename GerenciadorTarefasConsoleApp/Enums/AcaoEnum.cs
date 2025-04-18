@@ -9,13 +9,11 @@ namespace GerenciadorTarefasConsoleApp.Enums
 {
     enum AcaoEnum
     {
-        [Description("Concluir")]
-        CONCLUIR,
-        [Description("Exlcuir")]
-        EXCLUIR,
-        [Description("Iniciar")]
-        INICIAR,
-        [Description("Pendência")]
-        PENDENCIA,
+        [Description("Alterar Status")]
+        ALTERAR_STATUS,
+        [Description("Alterar Nome")]
+        ALTERAR_NOME,
+        [Description("Alterar Descrição")]
+        ALTERAR_DESC,
     }
 }

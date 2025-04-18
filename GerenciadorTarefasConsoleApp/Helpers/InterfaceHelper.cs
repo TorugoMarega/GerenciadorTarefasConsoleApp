@@ -251,17 +251,11 @@ namespace GerenciadorTarefasConsoleApp.Helpers
 
         public static int ViewShowActionListEdicaoReturnAction() {
             Console.WriteLine("\nAÇÕES");
-            Console.WriteLine("Alterar Status: ");
-            Console.WriteLine($"{EnumHelper.GetIdInt(AcaoEnum.CONCLUIR)} - {EnumHelper.GetDescription(AcaoEnum.CONCLUIR)}");
-            Console.WriteLine($"{EnumHelper.GetIdInt(AcaoEnum.EXCLUIR)} - {EnumHelper.GetDescription(AcaoEnum.EXCLUIR)}");
-            Console.WriteLine($"{EnumHelper.GetIdInt(AcaoEnum.INICIAR)} - {EnumHelper.GetDescription(AcaoEnum.INICIAR)}");
-            Console.WriteLine($"{EnumHelper.GetIdInt(AcaoEnum.PENDENCIA)} - {EnumHelper.GetDescription(AcaoEnum.PENDENCIA)}");
+            Console.WriteLine($"{EnumHelper.GetIdInt(AcaoEnum.ALTERAR_STATUS)} - {EnumHelper.GetDescription(AcaoEnum.ALTERAR_STATUS)}");
+            Console.WriteLine($"{EnumHelper.GetIdInt(AcaoEnum.ALTERAR_NOME)} - {EnumHelper.GetDescription(AcaoEnum.ALTERAR_NOME)}");
+            Console.WriteLine($"{EnumHelper.GetIdInt(AcaoEnum.ALTERAR_DESC)} - {EnumHelper.GetDescription(AcaoEnum.ALTERAR_DESC)}");
             Console.WriteLine("-------------------------");
-            Console.WriteLine("Alterar Atributos: ");
-            Console.WriteLine("Renomear tarefa: ");
-            Console.WriteLine("Nova descrição: ");
-            Console.WriteLine("-------------------------");
-            Console.WriteLine("0 - Retornar ao Menu Principal");
+            Console.WriteLine("333 - Retornar ao Menu Principal");
 
             Console.WriteLine("\nEscolha uma ação :");
             int.TryParse(Console.ReadLine(), out int acao);
@@ -294,33 +288,53 @@ namespace GerenciadorTarefasConsoleApp.Helpers
                     ShowMenu();
                     break;
                 case 0:
-                    ViewAlteraStatusTarefa(ref service, tarefa, StatusEnum.CONCLUIDA);
+                    ViewAlteraStatusTarefa(ref service, tarefa);
                     break;
             }
         }
 
-        public static void ViewAlteraStatusTarefa(ref TarefaService service,Tarefa tarefa, StatusEnum status) {
-            Console.WriteLine($"\nDeseja alterar o status da tarefa {tarefa.Id} - {tarefa.Titulo} para {EnumHelper.GetDescription(status)}?");
-            string op = Console.ReadLine().Trim().ToLower();
-            try
+        public static void ViewAlteraStatusTarefa(ref TarefaService service,Tarefa tarefa) {
+            Console.WriteLine("\nSTATUS:");
+            Console.WriteLine($"{EnumHelper.GetIdInt(StatusEnum.PENDENTE)} - {EnumHelper.GetDescription(StatusEnum.PENDENTE)}");
+            Console.WriteLine($"{EnumHelper.GetIdInt(StatusEnum.INICIADA)} - {EnumHelper.GetDescription(StatusEnum.INICIADA)}");
+            Console.WriteLine($"{EnumHelper.GetIdInt(StatusEnum.CONCLUIDA)} - {EnumHelper.GetDescription(StatusEnum.CONCLUIDA)}");
+            Console.WriteLine($"{EnumHelper.GetIdInt(StatusEnum.CANCELADA)} - {EnumHelper.GetDescription(StatusEnum.CANCELADA)}");
+            Console.WriteLine($"{EnumHelper.GetIdInt(StatusEnum.EXCLUIDA)} - {EnumHelper.GetDescription(StatusEnum.EXCLUIDA)}");
+            Console.WriteLine("-------------------------");
+            Console.WriteLine("333 - Retornar ao Menu Principal");
+
+            Console.WriteLine("\nEscolha um status:");
+            int.TryParse(Console.ReadLine(), out int novoStatus);
+            if (!novoStatus.Equals(333))
             {
-                if (validaSimNaoEntrada(op))
+                StatusEnum status = EnumHelper.GetIdEnum<StatusEnum>(novoStatus);
+
+                Console.WriteLine($"\nDeseja alterar o status da tarefa {tarefa.Id} - {tarefa.Titulo} para {EnumHelper.GetDescription(status)}?");
+                string op = Console.ReadLine().Trim().ToLower();
+                try
                 {
-                    var listaTrefas = service.CarregaListaDeTarefa();
-                    service.AlterarStatus(tarefa, listaTrefas, StatusEnum.CONCLUIDA);
-                    Console.WriteLine("\n\nTarefa conluída com sucesso!");
+                    if (validaSimNaoEntrada(op))
+                    {
+                        var listaTrefas = service.CarregaListaDeTarefa();
+                        service.AlterarStatus(tarefa, listaTrefas, status);
+                        Console.WriteLine("\n\nStatus alterado com sucesso!");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Não foi possível alterar status da Tarefa: {tarefa.Id} - {tarefa.Titulo}");
+                    }
+                    Console.WriteLine("\n\n");
+                    ShowMenu();
                 }
-                else
+                catch (Exception ex)
                 {
-                    Console.WriteLine($"Não foi possível alterar status da Tarefa: {tarefa.Id} - {tarefa.Titulo}");
+                    Console.WriteLine($"Ocorreu um erro ao alterar status da Tarefa: {tarefa.Id} - {tarefa.Titulo} Erro: {ex.Message}");
+                    Console.WriteLine("\n\n");
+                    ShowMenu();
                 }
-                Console.WriteLine("\n\n");
-                ShowMenu();
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ocorreu um erro ao alterar status da Tarefa: {tarefa.Id} - {tarefa.Titulo} Erro: {ex.Message}");
-                Console.WriteLine("\n\n");
+            else {
+                LimparConsole();
                 ShowMenu();
             }
         }
