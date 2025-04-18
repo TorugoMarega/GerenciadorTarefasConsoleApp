@@ -1,4 +1,7 @@
-﻿using GerenciadorTarefasConsoleApp.Models;
+﻿using GerenciadorTarefasConsoleApp.Helpers;
+using GerenciadorTarefasConsoleApp.Models;
+using log4net;
+using log4net.Repository.Hierarchy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +12,7 @@ namespace GerenciadorTarefasConsoleApp.Services
 {
     public class TarefaService
     {
+        private JsonHelper _jsonHelper = new JsonHelper();
         public Tarefa CriarTarefa(string titulo, string descricao)
         {
             Tarefa novaTarefa = new Tarefa(titulo, descricao);
@@ -34,6 +38,7 @@ namespace GerenciadorTarefasConsoleApp.Services
 
         public void ExibirTarefa(Tarefa tarefa)
         {
+            LogHelper.Info($"Iniciando Exibição da Tarefa: {tarefa.Id} - {tarefa.Titulo}");
             //Console.WriteLine($"ID: {tarefa.Id}");
             Console.WriteLine($"Título: {tarefa.Titulo}");
             Console.WriteLine($"Descrição: {tarefa.Descricao}");
@@ -44,6 +49,7 @@ namespace GerenciadorTarefasConsoleApp.Services
         }
 
         public void ExcluirTarefa(Tarefa tarefa) {
+            LogHelper.Info($"Excluindo a Tarefa: {tarefa.Id} - {tarefa.Titulo}");
             tarefa.Status = Enum.StatusEnum.EXCLUIDA;
             tarefa.DataConclusao = DateTime.Now;
         }
@@ -61,7 +67,16 @@ namespace GerenciadorTarefasConsoleApp.Services
         }
 
         public List<Tarefa> CarregaListaDeTarefa() {
-            return new List<Tarefa>();
+            LogHelper.Info("TarefaService - Consultando lista de tarefas");
+            try {
+                List<Tarefa> listaDeTarefas = _jsonHelper.ReadJson<Tarefa>();
+                return listaDeTarefas;
+            }
+            catch {
+                LogHelper.Error("TarefaService - Erro ao consultar lista de tarefas");
+                LogHelper.Error("TarefaService - Retornando Lista vazia");
+                return new List<Tarefa>();
+            }
         }
 
         public void ExibirListaDeTarefas() {
