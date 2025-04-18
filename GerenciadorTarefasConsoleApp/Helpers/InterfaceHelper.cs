@@ -281,15 +281,19 @@ namespace GerenciadorTarefasConsoleApp.Helpers
             Console.WriteLine("---------------");
             Console.WriteLine("EDITAR");
             var acao = ViewShowActionListEdicaoReturnAction();
-            switch (acao)
+
+            if (acao.Equals(0)) {
+                ViewAlteraStatusTarefa(ref service, tarefa);
+            } else if (acao.Equals(1))
             {
-                case 333:
-                    ShowMenu();
-                    break;
-                case 0:
-                    ViewAlteraStatusTarefa(ref service, tarefa);
-                    break;
+                ViewAlteraAtributosTarefa(ref service, tarefa, acao);
+            } else if (acao.Equals(2)) {
+                ViewAlteraAtributosTarefa(ref service, tarefa, acao);
             }
+            else {
+                ShowMenu();
+            }
+            ShowMenu();
         }
 
         public static void ViewAlteraStatusTarefa(ref TarefaService service,Tarefa tarefa) {
@@ -336,6 +340,23 @@ namespace GerenciadorTarefasConsoleApp.Helpers
                 LimparConsole();
                 ShowMenu();
             }
+        }
+
+        public static void ViewAlteraAtributosTarefa(ref TarefaService service, Tarefa tarefa, int enumAcao){
+            var listaTarefas = service.CarregaListaDeTarefa();
+            if (enumAcao.Equals(EnumHelper.GetIdInt(AcaoEnum.ALTERAR_NOME))) {
+                //ALTERA NOME
+                Console.WriteLine($"\nDigite o novo Título da Tarefa:");
+                var novoTitulo = Console.ReadLine();
+                service.EditarAtributosTarefa(listaTarefas, tarefa, novoTitulo, tarefa.Descricao);
+            }
+            else {
+                //ALTERA DESC
+                Console.WriteLine($"\nDigite a nova Descrição da Tarefa:");
+                var novoDesc = Console.ReadLine();
+                service.EditarAtributosTarefa(listaTarefas, tarefa, tarefa.Titulo, novoDesc);
+            }
+            Console.WriteLine();
         }
     }
 }

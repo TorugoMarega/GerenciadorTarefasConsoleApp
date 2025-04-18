@@ -35,23 +35,6 @@ namespace GerenciadorTarefasConsoleApp.Services
             }
         }
 
-        public void ConcluirTarefa(Tarefa tarefa)
-        {
-            tarefa.Status = StatusEnum.CONCLUIDA;
-            tarefa.DataConclusao = DateTime.Now;
-        }
-
-        public void CancelarTarefa(Tarefa tarefa)
-        {
-            tarefa.Status = StatusEnum.CANCELADA;
-        }
-
-        public void EditarTarefa(Tarefa tarefa, string novoTitulo, string novaDescricao)
-        {
-            tarefa.Titulo = novoTitulo;
-            tarefa.Descricao = novaDescricao;
-        }
-
         public void AlterarStatus(Tarefa tarefa, List<Tarefa> tarefas,StatusEnum novoStatus) {
             LogHelper.Info($"Alterando status da Tarefa: {tarefa.Id} - {tarefa.Titulo} de {tarefa.Status} para {novoStatus}");
             tarefas.Find(t => t.Id.Equals(tarefa.Id)).Status = novoStatus;
@@ -119,6 +102,15 @@ namespace GerenciadorTarefasConsoleApp.Services
                 LogHelper.Debug("TarefaService - Retornando Tarefa vazia");
                 return new List<Tarefa>();
             }
+        }
+
+        public void EditarAtributosTarefa(List<Tarefa> tarefas,Tarefa tarefa, string novoTitulo, string novaDescricao)
+        {
+            LogHelper.Info($"TarefaService - Alterando Atributos da Tarefa: {tarefa.Id} - {tarefa.Titulo}");
+            tarefas.Find(t => t.Id.Equals(tarefa.Id)).Titulo = novoTitulo;
+            tarefas.Find(t => t.Id.Equals(tarefa.Id)).Descricao = novaDescricao;
+            _repository.SaveTarefa(tarefas);
+            LogHelper.Info($"TarefaService - Novos Atributos. Título: {tarefa.Titulo}. Descrição:{tarefa.Descricao}");
         }
 
     }
