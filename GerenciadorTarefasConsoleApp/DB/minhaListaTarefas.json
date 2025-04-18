@@ -38,5 +38,21 @@
     "DataCriacao": "2025-04-18T00:33:13.6760094-03:00",
     "DataConclusao": "0001-01-01T00:00:00",
     "Status": 1
+  },
+  {
+    "Id": 6,
+    "Titulo": "teste exception",
+    "Descricao": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "DataCriacao": "2025-04-18T00:42:32.3693467-03:00",
+    "DataConclusao": "0001-01-01T00:00:00",
+    "Status": 1
+  },
+  {
+    "Id": 7,
+    "Titulo": "aaaaaaaaaaaaaa",
+    "Descricao": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "DataCriacao": "2025-04-18T00:43:29.8698561-03:00",
+    "DataConclusao": "0001-01-01T00:00:00",
+    "Status": 1
   }
 ]

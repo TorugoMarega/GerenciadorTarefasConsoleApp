@@ -31,7 +31,8 @@ namespace GerenciadorTarefasConsoleApp.Helpers
             Console.WriteLine("2 - Listar Tarefas");
             Console.WriteLine("3 - Editar Tarefa");
             Console.WriteLine("4 - Excluir Tarefa");
-            Console.WriteLine("5 - Encerrar programa");
+            Console.WriteLine("5 - Buscar Tarefa por ID");
+            Console.WriteLine("6 - Encerrar programa");
             Console.WriteLine("----------------------");
             Console.WriteLine("Digite a opção desejada: ");
             int.TryParse(Console.ReadLine(), out int op);
@@ -50,6 +51,9 @@ namespace GerenciadorTarefasConsoleApp.Helpers
                     ViewExibeListaDeTarefas(ref service);
                     break;
                 case 5:
+                    ViewBuscaTarefaPorId(ref service);
+                    break;
+                case 6:
                     PararPrograma();
                     break;
             }
@@ -69,6 +73,7 @@ namespace GerenciadorTarefasConsoleApp.Helpers
 
         public static void ViewExibeListaDeTarefas(ref TarefaService service) {
             Console.WriteLine("\n");
+            LogHelper.Debug($"InterfaceHelper - Iniciando Exibição da Lista de Tarefa");
             List<Tarefa> lista = service.CarregaListaDeTarefa();
             if (lista.Count > 0)
             {
@@ -81,13 +86,32 @@ namespace GerenciadorTarefasConsoleApp.Helpers
             }
             else
             {
-                Console.WriteLine("Lista de tarefas vazia\n");
+                Console.WriteLine("Lista de tarefas vazia\n\n");
             }
             ShowMenu();
         }
 
+        public static void ViewExibeListaDeTarefasEdit(ref TarefaService service)
+        {
+            Console.WriteLine("\n");
+            LogHelper.Debug($"InterfaceHelper - Iniciando Exibição da Lista de Tarefa");
+            List<Tarefa> lista = service.CarregaListaDeTarefa();
+            if (lista.Count > 0)
+            {
+                Console.WriteLine("Lista de Tarefas:");
+                foreach (var tarefa in lista)
+                {
+                    ViewExibeTarefa(tarefa);
+                }
+                Console.WriteLine("\n\n");
+            }
+            else
+            {
+                Console.WriteLine("Lista de tarefas vazia\n\n");
+            }
+        }
+
         public static void ViewExibeTarefa(Tarefa tarefa) {
-            LogHelper.Info($"Iniciando Exibição da Tarefa: {tarefa.Id} - {tarefa.Titulo}");
             Console.WriteLine($"ID: {tarefa.Id}");
             Console.WriteLine($"Título: {tarefa.Titulo}");
             Console.WriteLine($"Descrição: {tarefa.Descricao}");
@@ -112,6 +136,7 @@ namespace GerenciadorTarefasConsoleApp.Helpers
             catch(Exception ex)
             {
                 Console.WriteLine($"Ocorreu um erro ao criar a Tarefa: {titulo} Erro: {ex.Message}");
+                Console.WriteLine("\n\n");
                 ShowMenu();
             }
         }
@@ -120,9 +145,99 @@ namespace GerenciadorTarefasConsoleApp.Helpers
 
         public void ViewAtualizaTarefa() { }
 
-        public void ViewApagaTarefa() { }
+        public void ViewApagaTarefa(ref TarefaService service) {
+            var lista = service.CarregaListaDeTarefa();
+            ViewExibeListaDeTarefasEdit(ref service);
 
-        public void ViewBuscaTarefaPorId() { }
+            Console.WriteLine("Digite o ID da tarefa a ser excluída: ");
+            int.TryParse(Console.ReadLine(), out int id);
+
+            var tarefa = service.BuscaTarefaPorId(id);
+
+            ViewExibeTarefa(tarefa);
+
+            Console.WriteLine($"Tem certeza que deseja excluir a tarefa {id} ?");
+
+            string op = Console.ReadLine().Trim().ToLower();
+
+            try
+            {
+                if (validaSimNaoEntrada(op)){
+                    service.ExcluirTarefa(tarefa);
+                    Console.WriteLine("\n\nTarefa excluída com sucesso!");
+                }
+                else
+                {
+                    ViewApagaTarefa(ref service);
+                }
+                Console.WriteLine("\n\n");
+                ShowMenu();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ocorreu um erro ao excluir a Tarefa: {tarefa.Titulo} Erro: {ex.Message}");
+                Console.WriteLine("\n\n");
+                ShowMenu();
+            }
+        }
+
+        public static Boolean validaSimNaoEntrada(String entrada)
+        {
+            // Lista de respostas positivas
+            var respostasSim = new List<string> { "s", "sim", "yes", "y" };
+
+            // Lista de respostas negativas
+            var respostasNao = new List<string> { "n", "nao", "não", "no" };
+
+            if (respostasSim.Contains(entrada))
+            {
+                return true;
+            }
+            else if (respostasNao.Contains(entrada))
+            {
+                return false;
+            }
+            else
+            {
+                Console.WriteLine("Entrada inválida");
+                return false;
+            }
+        }
+        public static void ViewBuscaTarefaPorId(ref TarefaService service) {
+
+            Console.WriteLine("Digite o ID da tarefa: ");
+            int.TryParse(Console.ReadLine(), out int id);
+
+            var tarefa = service.BuscaTarefaPorId(id);
+
+            ViewExibeTarefa(tarefa);
+
+            Console.WriteLine($"Deseja editar a tarefa ?");
+
+            string op = Console.ReadLine().Trim().ToLower();
+
+            try
+            {
+                if (validaSimNaoEntrada(op))
+                {
+                    //service.ExcluirTarefa(tarefa);
+                    Console.WriteLine("\n\nTarefa editada com sucesso!");
+                }
+                else
+                {
+                    Console.WriteLine("\n\nRetornando ao menu principal");
+                    ShowMenu();
+                }
+                Console.WriteLine("\n\n");
+                ShowMenu();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ocorreu um erro ao editar a Tarefa: {tarefa.Titulo} Erro: {ex.Message}");
+                Console.WriteLine("\n\n");
+                ShowMenu();
+            }
+        }
 
         public void ViewBuscaTarefaPorNome() { }
     }

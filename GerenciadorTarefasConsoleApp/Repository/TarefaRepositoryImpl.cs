@@ -27,7 +27,14 @@ namespace GerenciadorTarefasConsoleApp.Repository
         {
             LogHelper.Debug("TarefaRepositoryImpl - Tentando buscar tarefa por ID");
             var tarefas = _jsonHelper.ReadJson<Tarefa>();
-            return tarefas.FirstOrDefault(t => t.Id == id);
+            if (tarefas.Count > 0)
+            {
+                return tarefas.FirstOrDefault(t => t.Id == id);
+            }
+            else
+            {
+                return new Tarefa();
+            }
         }
 
         public List<Tarefa> GetListaDeTarefas() {

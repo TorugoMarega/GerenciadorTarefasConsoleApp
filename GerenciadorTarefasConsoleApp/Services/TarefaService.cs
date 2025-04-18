@@ -25,12 +25,13 @@ namespace GerenciadorTarefasConsoleApp.Services
             try
             {
                 LogHelper.Info(($"TarefaService - Tentando criar a Tarefa"));
+                throw new NullReferenceException();
                 return _repository.CreateTarefa(titulo, descricao);
             }
             catch (Exception ex)
             {
                 LogHelper.Error($"TarefaService - Erro ao criar tarefa: {titulo}. Erro: {ex.Message}. Pilha: {ex.StackTrace}");
-                throw ex;
+                throw;
             }
         }
 
@@ -68,5 +69,31 @@ namespace GerenciadorTarefasConsoleApp.Services
                 return new List<Tarefa>();
             }
         }
+
+        public Tarefa BuscaTarefaPorId(int id)
+        {
+            LogHelper.Info($"TarefaService - Consultando tarefa {id}");
+            try
+            {
+                var result = _repository.GetTarefaById(id);
+
+                if (result != null && !string.IsNullOrWhiteSpace(result.Titulo))
+                {
+                    return result;
+                }
+                else
+                {
+                    LogHelper.Warn($"TarefaService - Nenhuma tarefa encontrada com ID {id} ou título em branco.");
+                    return new Tarefa(); // retorna objeto vazio para evitar null
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"TarefaService - Erro ao consultar tarefa. Erro: {ex.Message}. Pilha: {ex.StackTrace}");
+                LogHelper.Debug("TarefaService - Retornando Tarefa vazia");
+                return new Tarefa();
+            }
+        }
+
     }
 }
