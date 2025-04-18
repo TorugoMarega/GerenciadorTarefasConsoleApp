@@ -201,8 +201,7 @@ namespace GerenciadorTarefasConsoleApp.Helpers
             {
                 if (validaSimNaoEntrada(op))
                 {
-                    //service.ExcluirTarefa(tarefa);
-                    Console.WriteLine("\n\nTarefa editada com sucesso!");
+                    ViewEditaTarefa(ref service, tarefa);
                 }
                 else
                 {
