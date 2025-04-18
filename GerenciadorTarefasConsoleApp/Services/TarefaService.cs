@@ -51,11 +51,6 @@ namespace GerenciadorTarefasConsoleApp.Services
             tarefa.Descricao = novaDescricao;
         }
 
-        public void ExibirTarefa(Tarefa tarefa)
-        {
-
-        }
-
         public void ExcluirTarefa(Tarefa tarefa) {
             LogHelper.Info($"Excluindo a Tarefa: {tarefa.Id} - {tarefa.Titulo}");
             tarefa.Status = Enum.StatusEnum.EXCLUIDA;
