@@ -1,4 +1,5 @@
-﻿using GerenciadorTarefasConsoleApp.Models;
+﻿using GerenciadorTarefasConsoleApp.Enum;
+using GerenciadorTarefasConsoleApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,8 @@ namespace GerenciadorTarefasConsoleApp.Repository
         int CreateId(List<Tarefa> listaTarefas);
 
         Tarefa CreateTarefa(String titulo, String desc);
+
+        List<Tarefa> GetTarefaByStatus(StatusEnum status);
 
     }
 }

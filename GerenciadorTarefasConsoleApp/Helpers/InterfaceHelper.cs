@@ -1,7 +1,9 @@
-﻿using GerenciadorTarefasConsoleApp.Models;
+﻿using GerenciadorTarefasConsoleApp.Enum;
+using GerenciadorTarefasConsoleApp.Models;
 using GerenciadorTarefasConsoleApp.Repository;
 using GerenciadorTarefasConsoleApp.Services;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -32,7 +34,8 @@ namespace GerenciadorTarefasConsoleApp.Helpers
             Console.WriteLine("3 - Editar Tarefa");
             Console.WriteLine("4 - Excluir Tarefa");
             Console.WriteLine("5 - Buscar Tarefa por ID");
-            Console.WriteLine("6 - Encerrar programa");
+            Console.WriteLine("6 - Buscar Tarefa por Status");
+            Console.WriteLine("0 - Encerrar programa");
             Console.WriteLine("----------------------");
             Console.WriteLine("Digite a opção desejada: ");
             int.TryParse(Console.ReadLine(), out int op);
@@ -54,6 +57,9 @@ namespace GerenciadorTarefasConsoleApp.Helpers
                     ViewBuscaTarefaPorId(ref service);
                     break;
                 case 6:
+                    ViewBuscaTarefaPorStatus(ref service);
+                    break;
+                case 0:
                     PararPrograma();
                     break;
             }
@@ -117,8 +123,18 @@ namespace GerenciadorTarefasConsoleApp.Helpers
             Console.WriteLine($"Descrição: {tarefa.Descricao}");
             Console.WriteLine($"Data de Criação: {tarefa.DataCriacao}");
             Console.WriteLine($"Data de Conclusão: {tarefa.DataConclusao}");
-            Console.WriteLine($"Status: {tarefa.Status}");
+            Console.WriteLine($"Status: {EnumHelper.GetDescription(tarefa.Status)}");
             Console.WriteLine("-----------------------------");
+        }
+
+        public static void ViewExibeListaTarefasAux(List<Tarefa> tarefas)
+        {
+            Console.WriteLine("Lista de Tarefas:");
+            foreach (var tarefa in tarefas)
+            {
+                ViewExibeTarefa(tarefa);
+            }
+            Console.WriteLine("\n\n");
         }
 
         public static void ViewCriaTarefa(ref TarefaService service)
@@ -237,6 +253,34 @@ namespace GerenciadorTarefasConsoleApp.Helpers
                 Console.WriteLine("\n\n");
                 ShowMenu();
             }
+        }
+
+        public static void ViewBuscaTarefaPorStatus(ref TarefaService service)
+        {
+            Console.WriteLine("BUSCA POR STATUS\n");
+            Console.WriteLine("STATUS:");
+            Console.WriteLine($"{EnumHelper.GetIdInt(StatusEnum.PENDENTE)} - {EnumHelper.GetDescription(StatusEnum.PENDENTE)}");
+            Console.WriteLine($"{EnumHelper.GetIdInt(StatusEnum.INICIADA)} - {EnumHelper.GetDescription(StatusEnum.INICIADA)}");
+            Console.WriteLine($"{EnumHelper.GetIdInt(StatusEnum.CONCLUIDA)} - {EnumHelper.GetDescription(StatusEnum.CONCLUIDA)}");
+            Console.WriteLine($"{EnumHelper.GetIdInt(StatusEnum.CANCELADA)} - {EnumHelper.GetDescription(StatusEnum.CANCELADA)}");
+            Console.WriteLine($"{EnumHelper.GetIdInt(StatusEnum.EXCLUIDA)} - {EnumHelper.GetDescription(StatusEnum.EXCLUIDA)}");
+
+            Console.WriteLine("\nDigite o código de Status da tarefa: ");
+            int.TryParse(Console.ReadLine(), out int statusId);
+
+            StatusEnum StatusEnumID = EnumHelper.GetIdEnum(statusId);
+
+            var tarefas = service.BuscaTarefaPorStatus(StatusEnumID);
+
+            if (tarefas.Count > 0)
+            {
+                ViewExibeListaTarefasAux(tarefas);
+            }
+            else {
+                Console.WriteLine($"\nNenhuma tarefa encontrada com o Status \"{EnumHelper.GetDescription(StatusEnumID)}\"");
+                Console.WriteLine("\n\n");
+            }
+            ShowMenu();
         }
 
         public void ViewBuscaTarefaPorNome() { }

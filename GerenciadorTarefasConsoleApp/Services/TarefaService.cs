@@ -1,4 +1,5 @@
-﻿using GerenciadorTarefasConsoleApp.Helpers;
+﻿using GerenciadorTarefasConsoleApp.Enum;
+using GerenciadorTarefasConsoleApp.Helpers;
 using GerenciadorTarefasConsoleApp.Models;
 using GerenciadorTarefasConsoleApp.Repository;
 using log4net;
@@ -83,7 +84,7 @@ namespace GerenciadorTarefasConsoleApp.Services
                 }
                 else
                 {
-                    LogHelper.Warn($"TarefaService - Nenhuma tarefa encontrada com ID {id} ou título em branco.");
+                    LogHelper.Warn($"TarefaService - Nenhuma tarefa encontrada com o ID {id} ou título em branco.");
                     return new Tarefa(); // retorna objeto vazio para evitar null
                 }
             }
@@ -92,6 +93,31 @@ namespace GerenciadorTarefasConsoleApp.Services
                 LogHelper.Error($"TarefaService - Erro ao consultar tarefa. Erro: {ex.Message}. Pilha: {ex.StackTrace}");
                 LogHelper.Debug("TarefaService - Retornando Tarefa vazia");
                 return new Tarefa();
+            }
+        }
+
+        public List<Tarefa> BuscaTarefaPorStatus(StatusEnum status)
+        {
+            LogHelper.Info($"TarefaService - Consultando tarefas no status \"{EnumHelper.GetDescription(status)}\"");
+            try
+            {
+                var result = _repository.GetTarefaByStatus(status);
+
+                if (result != null && !string.IsNullOrWhiteSpace(result.First().Titulo))
+                {
+                    return result;
+                }
+                else
+                {
+                    LogHelper.Warn($"TarefaService - Nenhuma tarefa encontrada com o Status \"{EnumHelper.GetDescription(status)}\"");
+                    return new List<Tarefa>(); // retorna objeto vazio para evitar null
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"TarefaService - Erro ao consultar tarefa. Erro: {ex.Message}. Pilha: {ex.StackTrace}");
+                LogHelper.Debug("TarefaService - Retornando Tarefa vazia");
+                return new List<Tarefa>();
             }
         }
 

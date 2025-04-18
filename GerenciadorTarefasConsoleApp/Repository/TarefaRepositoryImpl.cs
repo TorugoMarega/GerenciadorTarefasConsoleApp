@@ -1,4 +1,5 @@
-﻿using GerenciadorTarefasConsoleApp.Helpers;
+﻿using GerenciadorTarefasConsoleApp.Enum;
+using GerenciadorTarefasConsoleApp.Helpers;
 using GerenciadorTarefasConsoleApp.Models;
 using System;
 using System.Collections.Generic;
@@ -57,6 +58,20 @@ namespace GerenciadorTarefasConsoleApp.Repository
             novaTarefa.Id = CreateId(listaTarefas);
             SaveTarefa(listaTarefas, novaTarefa);
             return novaTarefa;
+        }
+
+        public List<Tarefa> GetTarefaByStatus(StatusEnum status)
+        {
+            LogHelper.Debug("TarefaRepositoryImpl - Tentando buscar tarefa por ID");
+            var tarefas = _jsonHelper.ReadJson<Tarefa>();
+            if (tarefas.Count > 0)
+            {
+                return tarefas.FindAll(t => t.Status == status);
+            }
+            else
+            {
+                return new List<Tarefa>();
+            }
         }
     }
 }

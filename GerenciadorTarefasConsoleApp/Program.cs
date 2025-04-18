@@ -1,4 +1,5 @@
-﻿using GerenciadorTarefasConsoleApp.Helpers;
+﻿using GerenciadorTarefasConsoleApp.Enum;
+using GerenciadorTarefasConsoleApp.Helpers;
 using GerenciadorTarefasConsoleApp.Models;
 using GerenciadorTarefasConsoleApp.Services;
 using log4net;
