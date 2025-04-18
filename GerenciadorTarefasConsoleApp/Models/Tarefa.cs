@@ -23,5 +23,7 @@ namespace GerenciadorTarefasConsoleApp.Models
             DataCriacao = DateTime.Now;
             Status = StatusEnum.PENDENTE;
         }
+
+        public Tarefa() { }
     }
 }

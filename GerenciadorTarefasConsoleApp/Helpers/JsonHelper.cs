@@ -16,7 +16,7 @@ namespace GerenciadorTarefasConsoleApp.Helpers
 
         public JsonHelper()
         {
-            var pasta = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\DB"));
+            var pasta = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\DB"));
             Directory.CreateDirectory(pasta); //Cria pasta caso n exista
             _caminhoArquivo = Path.Combine(pasta, _nomeArquivo);
         }
@@ -31,9 +31,6 @@ namespace GerenciadorTarefasConsoleApp.Helpers
             var json = File.ReadAllText(_caminhoArquivo);
             var deserialize = JsonSerializer.Deserialize<List<Tarefa>>(json) ?? new List<Tarefa>();
             LogHelper.Info($"Quantidade de tarefas da lista: {deserialize.Count}");
-            if (deserialize.Count.Equals(0)) {
-                Console.WriteLine("Lista de tarefas vazia");
-            }
             return deserialize;
         }
         public void SaveJson<T>(List<T> dados)

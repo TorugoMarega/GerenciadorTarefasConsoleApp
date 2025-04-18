@@ -1,5 +1,6 @@
 ﻿using GerenciadorTarefasConsoleApp.Helpers;
 using GerenciadorTarefasConsoleApp.Models;
+using GerenciadorTarefasConsoleApp.Repository;
 using log4net;
 using log4net.Repository.Hierarchy;
 using System;
@@ -12,11 +13,25 @@ namespace GerenciadorTarefasConsoleApp.Services
 {
     public class TarefaService
     {
-        private JsonHelper _jsonHelper = new JsonHelper();
+        private readonly JsonHelper _jsonHelper = new JsonHelper();
+
+        private readonly ITarefaRepository _repository;
+
+        public TarefaService(ITarefaRepository repository) {
+            _repository = repository;
+        }
         public Tarefa CriarTarefa(string titulo, string descricao)
         {
-            Tarefa novaTarefa = new Tarefa(titulo, descricao);
-            return novaTarefa;
+            try
+            {
+                LogHelper.Info(($"TarefaService - Tentando criar a Tarefa"));
+                return _repository.CreateTarefa(titulo, descricao);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+                return new Tarefa();
+            }
         }
 
         public void ConcluirTarefa(Tarefa tarefa)
@@ -57,23 +72,25 @@ namespace GerenciadorTarefasConsoleApp.Services
         public void CriarTarefas() {
             Console.WriteLine("Digite o título da tarefa:");
             var titulo = Console.ReadLine();
-            Console.WriteLine("Digite o descriçãO da tarefa:");
+            Console.WriteLine("Digite o descrição da tarefa:");
             var descricao = Console.ReadLine();
-            var novaTarefa = this.CriarTarefa(titulo, descricao);
-
-            var list = CarregaListaDeTarefa();
-            list.Add(novaTarefa);
-            Console.WriteLine("Tarefa Criada Com sucesso!");
+            try {
+                var novaTarefa = this.CriarTarefa(titulo, descricao);
+                Console.WriteLine("Tarefa criada com sucesso!");
+            }
+            catch(Exception exception){
+                Console.WriteLine($"TarefaService - Ocorreu um erro ao criar a Tarefa: {titulo} Erro: {exception.Message}");
+                LogHelper.Error($"TarefaService - Ocorreu um erro ao criar a Tarefa: {titulo} Erro: {exception.Message}. Pilha: {exception.StackTrace}");
+            }
         }
 
         public List<Tarefa> CarregaListaDeTarefa() {
             LogHelper.Info("TarefaService - Consultando lista de tarefas");
             try {
-                List<Tarefa> listaDeTarefas = _jsonHelper.ReadJson<Tarefa>();
-                return listaDeTarefas;
+                return _repository.GetListaDeTarefas();
             }
-            catch {
-                LogHelper.Error("TarefaService - Erro ao consultar lista de tarefas");
+            catch (Exception ex) {
+                LogHelper.Error($"TarefaService - Erro ao consultar lista de tarefas. Erro: {ex.Message}. Pilha: {ex.StackTrace}");
                 LogHelper.Error("TarefaService - Retornando Lista vazia");
                 return new List<Tarefa>();
             }
@@ -82,11 +99,18 @@ namespace GerenciadorTarefasConsoleApp.Services
         public void ExibirListaDeTarefas() {
             Console.WriteLine("========================================================");
             List<Tarefa> lista = CarregaListaDeTarefa();
-            lista.Add(this.CriarTarefa("Tarefa Exemplo", "Criação de tarefa de exemplo"));
-            Console.WriteLine("Lista de Tarefas:");
-            foreach (var tarefa in lista) {
-                this.ExibirTarefa(tarefa);
+            if (lista.Count > 0)
+            {
+                Console.WriteLine("Lista de Tarefas:");
+                foreach (var tarefa in lista)
+                {
+                    this.ExibirTarefa(tarefa);
+                }
             }
+            else {
+                Console.WriteLine("Lista de tarefas vazia\n");
+            }
+                InterfaceHelper.showMenu();
         }
     }
 }

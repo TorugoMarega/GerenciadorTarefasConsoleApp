@@ -7,12 +7,21 @@ using System.Threading.Tasks;
 
 namespace GerenciadorTarefasConsoleApp.Repository
 {
-    interface ITarefaRepository
+    public interface ITarefaRepository
     {
-        void FindTarefa() { }
+        Tarefa GetTarefaById(int id);
 
-        void GetAllTarefa() { }
+        List<Tarefa> GetListaDeTarefas();
 
-        void SaveTarefa(List<Tarefa> tarefaList, Tarefa NovaTarefa) { }
+        void SaveTarefa(List<Tarefa> listaTarefas, Tarefa novaTarefa);
+
+       // void UpdateTarefa(int id);
+
+       // void DeleteTarefa(int id);
+
+        int CreateId(List<Tarefa> listaTarefas);
+
+        Tarefa CreateTarefa(String titulo, String desc);
+
     }
 }
