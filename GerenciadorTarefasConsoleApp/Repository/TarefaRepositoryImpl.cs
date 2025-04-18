@@ -1,4 +1,4 @@
-﻿using GerenciadorTarefasConsoleApp.Enum;
+﻿using GerenciadorTarefasConsoleApp.Enums;
 using GerenciadorTarefasConsoleApp.Helpers;
 using GerenciadorTarefasConsoleApp.Models;
 using System;
@@ -43,10 +43,9 @@ namespace GerenciadorTarefasConsoleApp.Repository
             return this._jsonHelper.ReadJson<Tarefa>();
         }
 
-        public void SaveTarefa(List<Tarefa> listaTarefas, Tarefa novaTarefa)
+        public void SaveTarefa(List<Tarefa> listaTarefas)
         {
             LogHelper.Debug("TarefaRepositoryImpl - Tentando Salvar tarefa");
-            listaTarefas.Add(novaTarefa);
             this._jsonHelper.SaveJson(listaTarefas);
         }
 
@@ -55,8 +54,9 @@ namespace GerenciadorTarefasConsoleApp.Repository
             LogHelper.Debug("TarefaRepositoryImpl - Tentando Criar tarefa");
             Tarefa novaTarefa = new Tarefa(titulo, desc);
             var listaTarefas = GetListaDeTarefas();
+            listaTarefas.Add(novaTarefa);
             novaTarefa.Id = CreateId(listaTarefas);
-            SaveTarefa(listaTarefas, novaTarefa);
+            SaveTarefa(listaTarefas);
             return novaTarefa;
         }
 

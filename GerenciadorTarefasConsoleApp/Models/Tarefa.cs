@@ -1,4 +1,4 @@
-﻿using GerenciadorTarefasConsoleApp.Enum;
+﻿using GerenciadorTarefasConsoleApp.Enums;
 using GerenciadorTarefasConsoleApp.Helpers;
 using System;
 using System.Collections.Generic;

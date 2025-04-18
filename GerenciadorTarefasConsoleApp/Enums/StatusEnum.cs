@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GerenciadorTarefasConsoleApp.Enum
+namespace GerenciadorTarefasConsoleApp.Enums
 {
     public enum StatusEnum
     {

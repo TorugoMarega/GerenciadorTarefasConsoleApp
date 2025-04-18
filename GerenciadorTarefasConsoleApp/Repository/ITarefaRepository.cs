@@ -1,4 +1,4 @@
-﻿using GerenciadorTarefasConsoleApp.Enum;
+﻿using GerenciadorTarefasConsoleApp.Enums;
 using GerenciadorTarefasConsoleApp.Models;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace GerenciadorTarefasConsoleApp.Repository
 
         List<Tarefa> GetListaDeTarefas();
 
-        void SaveTarefa(List<Tarefa> listaTarefas, Tarefa novaTarefa);
+        void SaveTarefa(List<Tarefa> listaTarefas);
 
        // void UpdateTarefa(int id);
 

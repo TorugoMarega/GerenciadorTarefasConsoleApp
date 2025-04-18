@@ -1,4 +1,4 @@
-﻿using GerenciadorTarefasConsoleApp.Enum;
+﻿using GerenciadorTarefasConsoleApp.Enums;
 using GerenciadorTarefasConsoleApp.Helpers;
 using GerenciadorTarefasConsoleApp.Models;
 using GerenciadorTarefasConsoleApp.Repository;
@@ -26,7 +26,6 @@ namespace GerenciadorTarefasConsoleApp.Services
             try
             {
                 LogHelper.Info(($"TarefaService - Tentando criar a Tarefa"));
-                throw new NullReferenceException();
                 return _repository.CreateTarefa(titulo, descricao);
             }
             catch (Exception ex)
@@ -38,13 +37,13 @@ namespace GerenciadorTarefasConsoleApp.Services
 
         public void ConcluirTarefa(Tarefa tarefa)
         {
-            tarefa.Status = Enum.StatusEnum.CONCLUIDA;
+            tarefa.Status = StatusEnum.CONCLUIDA;
             tarefa.DataConclusao = DateTime.Now;
         }
 
         public void CancelarTarefa(Tarefa tarefa)
         {
-            tarefa.Status = Enum.StatusEnum.CANCELADA;
+            tarefa.Status = StatusEnum.CANCELADA;
         }
 
         public void EditarTarefa(Tarefa tarefa, string novoTitulo, string novaDescricao)
@@ -53,10 +52,11 @@ namespace GerenciadorTarefasConsoleApp.Services
             tarefa.Descricao = novaDescricao;
         }
 
-        public void ExcluirTarefa(Tarefa tarefa) {
-            LogHelper.Info($"Excluindo a Tarefa: {tarefa.Id} - {tarefa.Titulo}");
-            tarefa.Status = Enum.StatusEnum.EXCLUIDA;
-            tarefa.DataConclusao = DateTime.Now;
+        public void AlterarStatus(Tarefa tarefa, List<Tarefa> tarefas,StatusEnum novoStatus) {
+            LogHelper.Info($"Alterando status da Tarefa: {tarefa.Id} - {tarefa.Titulo} de {tarefa.Status} para {novoStatus}");
+            tarefas.Find(t => t.Id.Equals(tarefa.Id)).Status = novoStatus;
+            tarefas.Find(t => t.Id.Equals(tarefa.Id)).DataConclusao = DateTime.Now;
+            _repository.SaveTarefa(tarefas);
         }
 
         public List<Tarefa> CarregaListaDeTarefa() {

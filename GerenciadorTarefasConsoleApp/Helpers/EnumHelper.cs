@@ -1,32 +1,34 @@
-﻿using GerenciadorTarefasConsoleApp.Enum;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace GerenciadorTarefasConsoleApp.Helpers
 {
     public static class EnumHelper
     {
-        public static string GetDescription(StatusEnum statusEnum)
+        // Retorna a descrição (se houver) ou o nome do enum
+        public static string GetDescription<TEnum>(TEnum enumValue) where TEnum : Enum
         {
-            var field = statusEnum.GetType().GetField(statusEnum.ToString());
+            var field = enumValue.GetType().GetField(enumValue.ToString());
             var attribute = Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute)) as DescriptionAttribute;
-            return attribute?.Description ?? statusEnum.ToString();
+            return attribute?.Description ?? enumValue.ToString();
         }
 
-        public static int GetIdInt(StatusEnum status)
+        // Converte o enum em int
+        public static int GetIdInt<TEnum>(TEnum enumValue) where TEnum : Enum
         {
-            int statusAsInt = (int)status;
-            return statusAsInt;
+            return Convert.ToInt32(enumValue);
         }
 
-        public static StatusEnum GetIdEnum(int statusInt)
+        // Converte int para enum (com verificação opcional)
+        public static TEnum GetIdEnum<TEnum>(int intValue) where TEnum : Enum
         {
-            StatusEnum status = (StatusEnum)statusInt;
-            return status;
+            if (!Enum.IsDefined(typeof(TEnum), intValue))
+            {
+                throw new ArgumentException($"Valor inválido para o enum {typeof(TEnum).Name}: {intValue}");
+            }
+
+            return (TEnum)Enum.ToObject(typeof(TEnum), intValue);
         }
     }
 }
