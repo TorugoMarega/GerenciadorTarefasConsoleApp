@@ -113,5 +113,28 @@ namespace GerenciadorTarefasConsoleApp.Services
             LogHelper.Info($"TarefaService - Novos Atributos. Título: {tarefa.Titulo}. Descrição:{tarefa.Descricao}");
         }
 
+        public List<Tarefa> BuscarPorTitulo(String titulo) {
+            LogHelper.Info($"TarefaService - Consultando tarefas com Título: \"{titulo}\"");
+            try
+            {
+                var result = _repository.GetListaDeTarefasByTitulo(titulo);
+
+                if (result != null && !string.IsNullOrWhiteSpace(result.First().Titulo))
+                {
+                    return result;
+                }
+                else
+                {
+                    LogHelper.Warn($"TarefaService - Nenhuma tarefa encontrada com o Titulo \"{titulo}\"");
+                    return new List<Tarefa>(); // retorna objeto vazio para evitar null
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"TarefaService - Erro ao consultar tarefa. Erro: {ex.Message}. Pilha: {ex.StackTrace}");
+                LogHelper.Debug("TarefaService - Retornando Tarefa vazia");
+                return new List<Tarefa>();
+            }
+        }
     }
 }

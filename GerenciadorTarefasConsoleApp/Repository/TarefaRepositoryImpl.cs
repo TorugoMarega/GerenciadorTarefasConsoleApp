@@ -73,5 +73,19 @@ namespace GerenciadorTarefasConsoleApp.Repository
                 return new List<Tarefa>();
             }
         }
+
+        public List<Tarefa> GetListaDeTarefasByTitulo(string titulo)
+        {
+            LogHelper.Debug("TarefaRepositoryImpl - Tentando buscar tarefa por Titulo");
+            var tarefas = _jsonHelper.ReadJson<Tarefa>();
+            if (tarefas.Count > 0)
+            {
+                return tarefas.FindAll(t => t.Titulo.Contains(titulo, StringComparison.OrdinalIgnoreCase));
+            }
+            else
+            {
+                return new List<Tarefa>();
+            }
+        }
     }
 }

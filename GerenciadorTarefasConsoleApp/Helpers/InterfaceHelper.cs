@@ -61,6 +61,9 @@ namespace GerenciadorTarefasConsoleApp.Helpers
                 case 5:
                     ViewBuscaTarefaPorStatus(ref service);
                     break;
+                case 6:
+                    ViewBuscaTarefaPorTitulo(ref service);
+                    break;
                 case 0:
                     PararPrograma();
                     break;
@@ -219,6 +222,17 @@ namespace GerenciadorTarefasConsoleApp.Helpers
             }
         }
 
+        public static void ViewBuscaTarefaPorTitulo(ref TarefaService service)
+        {
+
+            Console.WriteLine("Digite o Título da tarefa: ");
+            string busca = Console.ReadLine();
+            List<Tarefa> tarefaList = service.BuscarPorTitulo(busca);
+            Console.WriteLine();
+            ViewExibeListaTarefasAux(tarefaList);
+
+            ShowMenu();
+        }
         public static void ViewBuscaTarefaPorStatus(ref TarefaService service)
         {
             Console.WriteLine("BUSCA POR STATUS\n");

@@ -16,15 +16,12 @@ namespace GerenciadorTarefasConsoleApp.Repository
 
         void SaveTarefa(List<Tarefa> listaTarefas);
 
-       // void UpdateTarefa(int id);
-
-       // void DeleteTarefa(int id);
-
         int CreateId(List<Tarefa> listaTarefas);
 
         Tarefa CreateTarefa(String titulo, String desc);
 
         List<Tarefa> GetTarefaByStatus(StatusEnum status);
 
+        List<Tarefa> GetListaDeTarefasByTitulo(string titulo);
     }
 }
