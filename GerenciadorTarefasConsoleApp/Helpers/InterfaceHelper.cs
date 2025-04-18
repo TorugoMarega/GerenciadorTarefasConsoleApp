@@ -1,244 +1,287 @@
-﻿using GerenciadorTarefasConsoleApp.Models;
+﻿using GerenciadorTarefasConsoleApp.Enums;
+using GerenciadorTarefasConsoleApp.Models;
 using GerenciadorTarefasConsoleApp.Repository;
 using GerenciadorTarefasConsoleApp.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GerenciadorTarefasConsoleApp.Helpers
 {
     class InterfaceHelper
     {
+        private static TarefaService _service;
+
         public static void Start()
         {
-
-
             LogHelper.Info("INICIANDO APLICAÇÃO");
-
-            JsonHelper JsonHelper = new JsonHelper();
-            JsonHelper.CreateIfNotExists();
+            var jsonHelper = new JsonHelper();
+            jsonHelper.CreateIfNotExists();
+            _service = new TarefaService(new TarefaRepositoryImpl(), jsonHelper); // Agora passando o JsonHelper também
+            Run();
         }
 
-        public static void ShowMenu()
+        private static void Run()
         {
+            while (true)
+            {
+                ShowMenu();
+                if (!HandleMenuOption(ReadInt("Digite a opção desejada: "))) break;
+            }
+        }
+
+        private static void ShowMenu()
+        {
+            Console.Clear();
             Console.WriteLine("================== SISTEMA DE TAREFAS ==================");
-            Console.WriteLine("Menu");
-            Console.WriteLine("----------------------");
             Console.WriteLine("1 - Cadastrar Tarefa");
             Console.WriteLine("2 - Listar Tarefas");
             Console.WriteLine("3 - Editar Tarefa");
-            Console.WriteLine("4 - Excluir Tarefa");
-            Console.WriteLine("5 - Buscar Tarefa por ID");
-            Console.WriteLine("6 - Encerrar programa");
-            Console.WriteLine("----------------------");
-            Console.WriteLine("Digite a opção desejada: ");
-            int.TryParse(Console.ReadLine(), out int op);
-            LogHelper.Info($"MENU - O usuário esconlheu a opção: {op}");
-            Console.WriteLine("========================================================\n\n");
-
-            ITarefaRepository _repository = new TarefaRepositoryImpl();
-            TarefaService service = new TarefaService(_repository);
-            
-            switch (op)
-            {
-                case 1:
-                    ViewCriaTarefa(ref service);
-                    break;
-                case 2:
-                    ViewExibeListaDeTarefas(ref service);
-                    break;
-                case 5:
-                    ViewBuscaTarefaPorId(ref service);
-                    break;
-                case 6:
-                    PararPrograma();
-                    break;
-            }
+            Console.WriteLine("4 - Buscar Tarefa por ID");
+            Console.WriteLine("5 - Buscar Tarefa por Status");
+            Console.WriteLine("6 - Buscar Tarefa por Título");
+            Console.WriteLine("0 - Encerrar programa");
             Console.WriteLine("========================================================");
         }
 
-        public static void PararPrograma()
+        private static bool HandleMenuOption(int op)
         {
-            Console.WriteLine("\nPressione qualquer tecla para sair...");
+            LogHelper.Info($"MENU - O usuário escolheu a opção: {op}");
+            Console.WriteLine();
+            switch (op)
+            {
+                case 1: ViewCriaTarefa(); break;
+                case 2: ViewExibeListaDeTarefas(); break;
+                case 3: ViewEditaTarefaMenu(); break;
+                case 4: ViewBuscaTarefaPorId(); break;
+                case 5: ViewBuscaTarefaPorStatus(); break;
+                case 6: ViewBuscaTarefaPorTitulo(); break;
+                case 0:
+                    PararPrograma();
+                    return false;
+                default:
+                    Console.WriteLine("Opção inválida.\n");
+                    break;
+            }
+            Console.WriteLine("\nPressione qualquer tecla para continuar...");
             Console.ReadKey();
-            LogHelper.Info("Aplicação está sendo encerrada pelo usuário");
+            return true;
         }
 
-        public static void LimparConsole() {
-            Console.Clear();
-        }
-
-        public static void ViewExibeListaDeTarefas(ref TarefaService service) {
-            Console.WriteLine("\n");
-            LogHelper.Debug($"InterfaceHelper - Iniciando Exibição da Lista de Tarefa");
-            List<Tarefa> lista = service.CarregaListaDeTarefa();
-            if (lista.Count > 0)
-            {
-                Console.WriteLine("Lista de Tarefas:");
-                foreach (var tarefa in lista)
-                {
-                    ViewExibeTarefa(tarefa);
-                }
-                Console.WriteLine("\n\n");
-            }
-            else
-            {
-                Console.WriteLine("Lista de tarefas vazia\n\n");
-            }
-            ShowMenu();
-        }
-
-        public static void ViewExibeListaDeTarefasEdit(ref TarefaService service)
+        private static void PararPrograma()
         {
-            Console.WriteLine("\n");
-            LogHelper.Debug($"InterfaceHelper - Iniciando Exibição da Lista de Tarefa");
-            List<Tarefa> lista = service.CarregaListaDeTarefa();
-            if (lista.Count > 0)
+            Console.WriteLine("Encerrando aplicação...");
+            LogHelper.Info("Aplicação encerrada pelo usuário");
+        }
+
+        private static void ViewCriaTarefa()
+        {
+            Console.Write("Digite o título da tarefa: ");
+            string titulo = Console.ReadLine();
+            Console.Write("Digite a descrição da tarefa: ");
+            string descricao = Console.ReadLine();
+
+            try
             {
-                Console.WriteLine("Lista de Tarefas:");
-                foreach (var tarefa in lista)
-                {
-                    ViewExibeTarefa(tarefa);
-                }
-                Console.WriteLine("\n\n");
+                _service.CriarTarefa(titulo, descricao);
+                Console.WriteLine("Tarefa criada com sucesso!");
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("Lista de tarefas vazia\n\n");
+                Console.WriteLine($"Erro ao criar tarefa: {ex.Message}");
             }
         }
 
-        public static void ViewExibeTarefa(Tarefa tarefa) {
-            Console.WriteLine($"ID: {tarefa.Id}");
+        private static void ViewExibeListaDeTarefas()
+        {
+            var lista = _service.CarregaListaDeTarefa();
+            if (lista.Count > 0)
+            {
+                Console.WriteLine("\nLista de Tarefas:");
+                lista.ForEach(ViewExibeTarefa);
+            }
+            else Console.WriteLine("Lista de tarefas vazia.");
+        }
+
+        private static void ViewExibeTarefa(Tarefa tarefa)
+        {
+            Console.WriteLine($"\nID: {tarefa.Id}");
             Console.WriteLine($"Título: {tarefa.Titulo}");
             Console.WriteLine($"Descrição: {tarefa.Descricao}");
             Console.WriteLine($"Data de Criação: {tarefa.DataCriacao}");
             Console.WriteLine($"Data de Conclusão: {tarefa.DataConclusao}");
-            Console.WriteLine($"Status: {tarefa.Status}");
+            Console.WriteLine($"Status: {EnumHelper.GetDescription(tarefa.Status)}");
             Console.WriteLine("-----------------------------");
         }
 
-        public static void ViewCriaTarefa(ref TarefaService service)
+        private static void ViewBuscaTarefaPorId()
         {
-            Console.WriteLine("Digite o título da tarefa:");
-            var titulo = Console.ReadLine();
-            Console.WriteLine("Digite o descrição da tarefa:");
-            var descricao = Console.ReadLine();
-            try {
-                service.CriarTarefa(titulo, descricao);
-                Console.WriteLine("\n\nTarefa criada com sucesso!");
-                Console.WriteLine("\n\n");
-                ShowMenu();
-            }
-            catch(Exception ex)
+            int id = ReadInt("Digite o ID da tarefa: ");
+            var tarefa = _service.BuscaTarefaPorId(id);
+
+            if (tarefa == null)
             {
-                Console.WriteLine($"Ocorreu um erro ao criar a Tarefa: {titulo} Erro: {ex.Message}");
-                Console.WriteLine("\n\n");
-                ShowMenu();
+                Console.WriteLine("Tarefa não encontrada.");
+                return;
             }
-        }
-
-        public void ViewEditaTarefa() { }
-
-        public void ViewAtualizaTarefa() { }
-
-        public void ViewApagaTarefa(ref TarefaService service) {
-            var lista = service.CarregaListaDeTarefa();
-            ViewExibeListaDeTarefasEdit(ref service);
-
-            Console.WriteLine("Digite o ID da tarefa a ser excluída: ");
-            int.TryParse(Console.ReadLine(), out int id);
-
-            var tarefa = service.BuscaTarefaPorId(id);
 
             ViewExibeTarefa(tarefa);
-
-            Console.WriteLine($"Tem certeza que deseja excluir a tarefa {id} ?");
-
-            string op = Console.ReadLine().Trim().ToLower();
-
-            try
+            if (Confirmacao("Deseja editar a tarefa? (S/N) "))
             {
-                if (validaSimNaoEntrada(op)){
-                    service.ExcluirTarefa(tarefa);
-                    Console.WriteLine("\n\nTarefa excluída com sucesso!");
-                }
-                else
-                {
-                    ViewApagaTarefa(ref service);
-                }
-                Console.WriteLine("\n\n");
-                ShowMenu();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ocorreu um erro ao excluir a Tarefa: {tarefa.Titulo} Erro: {ex.Message}");
-                Console.WriteLine("\n\n");
-                ShowMenu();
+                ViewEditaTarefa(tarefa);
             }
         }
 
-        public static Boolean validaSimNaoEntrada(String entrada)
+        private static void ViewBuscaTarefaPorTitulo()
         {
-            // Lista de respostas positivas
-            var respostasSim = new List<string> { "s", "sim", "yes", "y" };
+            Console.Write("Digite o título da tarefa: ");
+            string titulo = Console.ReadLine();
+            var tarefas = _service.BuscarPorTitulo(titulo);
 
-            // Lista de respostas negativas
-            var respostasNao = new List<string> { "n", "nao", "não", "no" };
+            if (tarefas.Count == 0)
+                Console.WriteLine("Nenhuma tarefa encontrada.");
+            else
+                tarefas.ForEach(ViewExibeTarefa);
+        }
 
-            if (respostasSim.Contains(entrada))
+        private static void ViewBuscaTarefaPorStatus()
+        {
+            Console.WriteLine("\nStatus disponíveis:");
+            foreach (StatusEnum status in Enum.GetValues(typeof(StatusEnum)))
             {
-                return true;
+                Console.WriteLine($"{EnumHelper.GetIdInt(status)} - {EnumHelper.GetDescription(status)}");
             }
-            else if (respostasNao.Contains(entrada))
+
+            int statusId = ReadInt("Digite o código do status: ");
+            StatusEnum statusEnum = EnumHelper.GetIdEnum<StatusEnum>(statusId);
+            var tarefas = _service.BuscaTarefaPorStatus(statusEnum);
+
+            if (tarefas.Count == 0)
+                Console.WriteLine($"Nenhuma tarefa com status \"{EnumHelper.GetDescription(statusEnum)}\"");
+            else
+                tarefas.ForEach(ViewExibeTarefa);
+        }
+
+        private static void ViewEditaTarefaMenu()
+        {
+            ViewExibeListaDeTarefas();
+            int id = ReadInt("Digite o ID da tarefa que deseja editar: ");
+            var tarefa = _service.BuscaTarefaPorId(id);
+            if (tarefa != null)
             {
-                return false;
+                ViewEditaTarefa(tarefa);
             }
             else
             {
-                Console.WriteLine("Entrada inválida");
-                return false;
-            }
-        }
-        public static void ViewBuscaTarefaPorId(ref TarefaService service) {
-
-            Console.WriteLine("Digite o ID da tarefa: ");
-            int.TryParse(Console.ReadLine(), out int id);
-
-            var tarefa = service.BuscaTarefaPorId(id);
-
-            ViewExibeTarefa(tarefa);
-
-            Console.WriteLine($"Deseja editar a tarefa ?");
-
-            string op = Console.ReadLine().Trim().ToLower();
-
-            try
-            {
-                if (validaSimNaoEntrada(op))
-                {
-                    //service.ExcluirTarefa(tarefa);
-                    Console.WriteLine("\n\nTarefa editada com sucesso!");
-                }
-                else
-                {
-                    Console.WriteLine("\n\nRetornando ao menu principal");
-                    ShowMenu();
-                }
-                Console.WriteLine("\n\n");
-                ShowMenu();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ocorreu um erro ao editar a Tarefa: {tarefa.Titulo} Erro: {ex.Message}");
-                Console.WriteLine("\n\n");
-                ShowMenu();
+                Console.WriteLine("Tarefa não encontrada.");
             }
         }
 
-        public void ViewBuscaTarefaPorNome() { }
+        private static void ViewEditaTarefa(Tarefa tarefa)
+        {
+            bool continuarEditando = true;
+
+            while (continuarEditando)
+            {
+                // Exibe os dados da tarefa antes de qualquer alteração
+                ViewExibeTarefa(tarefa);
+                Console.WriteLine("\nAÇÕES:");
+                Console.WriteLine("0 - Alterar Status");
+                Console.WriteLine("1 - Alterar Título");
+                Console.WriteLine("2 - Alterar Descrição");
+                Console.WriteLine("333 - Voltar ao menu");
+
+                int acao = ReadInt("Escolha uma ação: ");
+
+                switch (acao)
+                {
+                    case 0:
+                        ViewAlteraStatusTarefa(tarefa);
+                        break;
+                    case 1:
+                    case 2:
+                        ViewAlteraAtributosTarefa(tarefa, acao);
+                        break;
+                    case 333:
+                        continuarEditando = false;
+                        break;
+                    default:
+                        Console.WriteLine("Ação inválida.");
+                        break;
+                }
+
+                // Atualiza a tarefa após qualquer modificação
+                if (acao != 333)
+                {
+                    tarefa = _service.BuscaTarefaPorId(tarefa.Id);  // Recarrega a tarefa atualizada
+                }
+            }
+        }
+
+        private static void ViewAlteraStatusTarefa(Tarefa tarefa)
+        {
+            Console.WriteLine("\nStatus disponíveis:");
+            foreach (StatusEnum status in Enum.GetValues(typeof(StatusEnum)))
+            {
+                Console.WriteLine($"{EnumHelper.GetIdInt(status)} - {EnumHelper.GetDescription(status)}");
+            }
+
+            int statusId = ReadInt("Escolha o novo status: ");
+            if (statusId == 333) return;
+
+            StatusEnum novoStatus = EnumHelper.GetIdEnum<StatusEnum>(statusId);
+            if (Confirmacao($"Deseja alterar o status da tarefa para \"{EnumHelper.GetDescription(novoStatus)}\"? (S/N) "))
+            {
+                _service.AlterarStatus(tarefa, _service.CarregaListaDeTarefa(), novoStatus);
+                Console.WriteLine("Status atualizado com sucesso!");
+            }
+        }
+
+        private static void ViewAlteraAtributosTarefa(Tarefa tarefa, int tipoAlteracao)
+        {
+            string novoTitulo = tarefa.Titulo;
+            string novaDesc = tarefa.Descricao;
+
+            if (tipoAlteracao == 1)
+            {
+                Console.Write("Digite o novo título: ");
+                novoTitulo = Console.ReadLine();
+            }
+            else
+            {
+                Console.Write("Digite a nova descrição: ");
+                novaDesc = Console.ReadLine();
+            }
+
+            _service.EditarAtributosTarefa(_service.CarregaListaDeTarefa(), tarefa, novoTitulo, novaDesc);
+            Console.WriteLine("Atributo atualizado com sucesso!");
+        }
+
+        // Métodos auxiliares
+
+        private static int ReadInt(string mensagem)
+        {
+            int valor;
+            Console.Write(mensagem);
+            while (!int.TryParse(Console.ReadLine(), out valor))
+            {
+                Console.Write("Valor inválido. Tente novamente: ");
+            }
+            return valor;
+        }
+
+        private static bool Confirmacao(string mensagem)
+        {
+            Console.Write(mensagem);
+            string entrada = Console.ReadLine()?.Trim().ToLower();
+
+            var positivos = new[] { "s", "sim", "y", "yes" };
+            var negativos = new[] { "n", "nao", "não", "no" };
+
+            if (positivos.Contains(entrada)) return true;
+            if (negativos.Contains(entrada)) return false;
+
+            Console.WriteLine("Entrada inválida. Operação cancelada.");
+            return false;
+        }
     }
 }

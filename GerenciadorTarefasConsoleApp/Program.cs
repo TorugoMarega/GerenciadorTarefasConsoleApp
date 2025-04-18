@@ -1,4 +1,5 @@
-﻿using GerenciadorTarefasConsoleApp.Helpers;
+﻿using GerenciadorTarefasConsoleApp.Enums;
+using GerenciadorTarefasConsoleApp.Helpers;
 using GerenciadorTarefasConsoleApp.Models;
 using GerenciadorTarefasConsoleApp.Services;
 using log4net;
@@ -10,6 +11,5 @@ class Program
     static void Main(string[] args)
     {
         InterfaceHelper.Start();
-        InterfaceHelper.ShowMenu();
     }
 }
